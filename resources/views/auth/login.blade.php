@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{{ asset('images/company-logo22.png') }}">
+    <title>Trainee Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('css/login.css') }}">
+</head>
+<body>
+    @php
+    use Illuminate\Support\Facades\Route;
+    @endphp
+    <div>
+        <img src="{{ asset('images/company-logo22.png') }}" alt="Company Logo">
+        <p>You don't have an account? <a href="{{ route('register') }}">Register now</a></p>
+        <form method="POST" action="{{ route('login') }}">
+            @csrf
+            <input type="text" name="username_or_email" value="{{ old('username_or_email') }}" autofocus placeholder="Username or Email" required />
+            <header class="password-container">
+                <input id="password" type="password" name="password" placeholder="Password" class="password" required />
+                <button type="button" id="togglePassword"><i id="show" class="fa-solid fa-eye"></i></button>
+            </header>
+            <input type="submit" value="Log in">
+            @if (Route::has('password.request'))
+                <a class="forgot-password-link" href="{{ route('password.request') }}">Forgot Your Password?</a>
+            @endif
+            @if ($errors->any())
+                <div class="error">
+                    {{ $errors->first() }}
+                </div>
+            @endif
+        </form>
+    </div>
+    <script>
+        document.getElementById('togglePassword').addEventListener('click', function (e) {
+            var password = document.getElementById('password');
+            var icon = document.getElementById('show');
+            if (password.type === 'password') {
+                password.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                password.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+    </script>
+</body>
+</html>

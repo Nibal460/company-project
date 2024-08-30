@@ -1,0 +1,79 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\User; // Example import
+use Illuminate\Http\Request;
+
+use App\Models\Profile3;
+use BaconQrCode\Encoder\QrCode;
+use BaconQrCode\Common\ErrorCorrectionLevel;
+use BaconQrCode\Common\Mode;
+use BaconQrCode\Common\Version;
+use BaconQrCode\Renderer\ImageRenderer;
+use BaconQrCode\Renderer\RendererStyle\RendererStyle;
+use BaconQrCode\Writer;
+use BaconQrCode\Renderer\Image\SvgImageBackEnd;
+
+class QrCodeController extends Controller
+{
+    public function saveQRCode(Request $request)
+    {
+        $qrCodeData = $request->input('qr_code_data');
+        $userId = $request->input('user_id');
+
+        if (!$qrCodeData || !$userId) {
+            return response()->json(['success' => false, 'message' => 'Invalid data.'], 400);
+        }
+
+        // Decode the base64 image data
+        $data = explode(',', $qrCodeData);
+        if (count($data) !== 2) {
+            return response()->json(['success' => false, 'message' => 'Invalid base64 data.'], 400);
+        }
+
+        $imageData = base64_decode($data[1]);
+
+        // Generate a unique filename
+        $fileName = 'qrcodes/' . $userId . '.png';
+
+        // Save the image to the public storage folder
+        Storage::disk('public')->put($fileName, $imageData);
+
+        // Update the profile with the QR code path
+        $profile = Profile3::where('user_id', $userId)->first();
+        if (!$profile) {
+            return response()->json(['success' => false, 'message' => 'Profile not found.'], 404);
+        }
+
+        $profile->qr_code_path = $fileName;
+        $profile->save();
+
+        return response()->json(['success' => true, 'path' => Storage::url($fileName)]);
+    }
+
+    public function generateQrCode(Request $request)
+    {
+        $userId = $request->input('user_id');
+        if (!$userId) {
+            return response()->json(['success' => false, 'message' => 'User ID is required.'], 400);
+        }
+
+        $mode = new Mode(Mode::BYTE);
+        $errorCorrectionLevel = new ErrorCorrectionLevel(ErrorCorrectionLevel::H);
+        $version = new Version(7); // Use an appropriate version based on your needs
+        $maskPattern = 0; // Or any valid mask pattern
+        $matrix = new ByteMatrix(21, 21); // Example size
+
+        $qrCode = new QrCode($mode, $errorCorrectionLevel, $version, $maskPattern, $matrix);
+
+        $renderer = new ImageRenderer(
+            new RendererStyle(400),
+            new SvgImageBackEnd()
+        );
+        $writer = new Writer($renderer);
+        $qrCodeData = $writer->writeString($userId);
+
+        return response()->json(['success' => true, 'qr_code_data' => $qrCodeData]);
+    }
+}

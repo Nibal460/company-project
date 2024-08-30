@@ -1,0 +1,261 @@
+:root {
+    --maincolor: rgb(57, 190, 239);
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 120vh;
+    width: 100vw;
+}
+
+.mainContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    width: 90%;
+    height: 98%;
+    border: 1px solid black;
+    z-index: 1;
+    background-color: white;
+    border-radius: 50px;
+    background-image: url(../images/company-logo22.png);
+    background-repeat: no-repeat;
+    background-position: left;
+    background-size: 50% auto;;
+    overflow: hidden;
+}
+
+.animated {
+    width: 90%;
+    height: 90%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    border-radius: 50px;
+}
+
+.animated2 {
+    background-color: var(--maincolor);
+    width: 150%;
+    height: 20%;
+    position: absolute;
+    z-index: 0;
+    animation: anim 5s infinite linear;
+}
+
+a {
+    text-decoration: none;
+}
+
+h1 {
+    color: var(--maincolor);
+    font-weight: bolder;
+    text-align: center;
+    align-self: center;
+}
+
+p {
+    font-weight: bolder;
+    text-align: center;
+    align-self: center;
+}
+
+form {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-direction: column;
+    width: 70%;
+    height: 85%;
+    overflow-y: auto; /* Add vertical scrollbar */
+    padding-right: 15px; /* Adjust for scrollbar width */
+}
+.form-group-row {
+    display: flex;
+    justify-content: space-between; /* Adjusts the spacing between items */
+    gap: 10px; /* Adds space between each form-group */
+    width: 50%; 
+}
+.form-group {
+    flex: 1; /* Makes each form-group take an equal amount of space */
+}
+input, select, .form-control-file {
+    width: 50%;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: white;
+    color: #0a1f34;
+    border: 3px solid var(--maincolor);
+    outline: none;
+    margin: 0.4%;
+}
+
+input::placeholder, select::placeholder, .form-control-file::placeholder {
+    color: #0a1f34;
+    font-weight: bold;
+}
+
+.form-control2{
+    width: 30%;
+    font-size:18px;
+    font-weight:bold;
+    background-color:rgb(57, 190, 239);
+}
+.terms {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    font-weight: bold;
+    width: 50%;
+}
+
+#city {
+    color: #0a1f34;
+}
+
+#course_name {
+    color: #0a1f34;
+}
+
+@keyframes anim {
+    from {
+        transform: rotate(0);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media only screen and (max-width: 800px) {
+    .animated {
+        height: 100%;
+        width: 100%;
+        border: none;
+        border-radius: none;
+    }
+
+    .animated2 {
+        height: 200%;
+    }
+
+    body {
+        overflow: hidden;
+        width: 90vw;
+        height: 110vh;
+    }
+
+    html {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .mainContainer {
+        align-items: center;
+        width: 95%;
+        height: 95%;
+    }
+
+    .terms {
+        display: none;
+    }
+
+    input, select, .form-control-file {
+        width: 100%;
+        margin: 0;
+    }
+
+    form {
+        width: 100%; /* Ensure the form takes full width */
+        height: 80%; /* Adjust the height to fit the smaller screen */
+        padding-right: 0; /* No padding required on small screens */
+        overflow-y: auto; /* Ensure the scrollbar works on small screens */
+    }
+}
+
+.error-message {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 105%;
+    color: red;
+    font-size: 0.9em;
+    white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+    .mainContainer{
+    background-size: 30% auto;
+    }
+    .error-message {
+        position: static;
+        transform: none;
+        left: 0;
+        margin-top: 5px;
+    }
+}
+
+.form-group {
+    position: relative;
+}
+
+#user_image {
+    width: calc(100% - 10px); /* Adjust as needed */
+}
+
+
+/* Custom CSS for date/time input */
+.datetimepicker-input {
+    padding-right: 30px; /* Space for calendar icon */
+}
+
+.datetimepicker-input:focus {
+    box-shadow: none;
+}
+
+
+
+
+        .datetime-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .time-picker,
+        .date-picker {
+            padding: 10px;
+            border: 1px solid rgb(57, 190, 239);
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        #course_time_hour{
+            border: 3px solid rgb(57, 190, 239);
+            border-radius: 10px;
+        }
+
+        #course_time_minute{
+
+            border: 3px solid rgb(57, 190, 239);
+            border-radius: 10px;
+        }
+        .time-picker select,
+        .date-picker {
+            width: 150px; /* Adjust width as needed */
+            padding: 10px;
+            border: 3px solid var(--maincolor);
+            border-radius: 10px;
+        }
+        .am-pm-picker {
+            width: 80px;
+        }
+
+        
+    

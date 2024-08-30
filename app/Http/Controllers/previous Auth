@@ -1,0 +1,140 @@
+<?php
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use App\Models\User;
+use App\Models\Profile3;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use BaconQrCode\Writer;
+use BaconQrCode\Renderer\ImageRenderer;
+use BaconQrCode\Renderer\Image\Png;
+use BaconQrCode\Renderer\RendererStyle\RendererStyle;
+
+class AuthController extends Controller
+{
+    public function showLoginForm()
+    {
+        return view('auth.login');
+    }
+
+    public function showRegistrationForm()
+    {
+        return view('auth.register');
+    }
+
+    public function login(Request $request)
+    {
+        $credentials = $request->only('username_or_email', 'password');
+
+        if (Auth::attempt(['email' => $credentials['username_or_email'], 'password' => $credentials['password']])) {
+            return redirect('/home');
+        }
+
+        if (Auth::attempt(['username' => $credentials['username_or_email'], 'password' => $credentials['password']])) {
+            return redirect('/home');
+        }
+
+        Log::warning('Login attempt failed for username/email: ' . $request->username_or_email);
+
+        return response()->json(['error' => 'Invalid credentials'], 401);
+    }
+
+    public function register(Request $request)
+    {
+        Log::info('Register method called', ['request' => $request->all()]);
+
+        $validator = $this->validator($request->all());
+
+        if ($validator->fails()) {
+            Log::error('Validation failed', ['errors' => $validator->errors()->all()]);
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $username = $this->generateUniqueUsername($request->fname);
+            $user = User::create([
+                'fname' => $request->fname,
+                'lname' => $request->lname,
+                'username' => $username,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'telephone' => $request->telephone,
+                'location' => $request->location,
+            ]);
+
+            // Generate QR code
+            $qrCodeText = $user->email;
+            $renderer = new ImageRenderer(
+                new RendererStyle(400),
+                new Png()
+            );
+            $writer = new Writer($renderer);
+            $qrCodePath = 'qrcodes/' . $user->id . '.png';
+            $writer->writeFile($qrCodeText, storage_path('app/public/' . $qrCodePath));
+
+            $user->qr_code_path = $qrCodePath;
+            $user->save();
+
+            Profile3::create([
+                'user_id' => $user->id,
+                'fname' => $user->fname,
+                'lname' => $user->lname,
+                'email' => $user->email,
+                'telephone' => $user->telephone,
+                'location' => $user->location,
+                'qr_code_path' => $qrCodePath,
+            ]);
+
+            DB::commit();
+
+            Auth::login($user);
+
+            Log::info('Registration successful, redirecting to home page');
+            return redirect('/home');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Registration failed', ['exception' => $e]);
+            return redirect()->back()->withInput()->withErrors(['registration_error' => 'Failed to register user. Please try again later.']);
+        }
+    }
+
+    protected function validator(array $data)
+    {
+        return Validator::make($data, [
+            'fname' => ['required', 'string', 'max:255'],
+            'lname' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users', 'unique:profile3s'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'telephone' => ['required', 'string', 'max:20'],
+            'location' => ['required', 'string', 'max:255'],
+        ]);
+    }
+
+    public function show()
+    {
+        $user = Auth::user();
+
+        if ($user) {
+            $profile3 = $user->profile3;
+            return view('profile3.show', ['profile3' => $profile3]);
+        } else {
+            return redirect('/login');
+        }
+    }
+
+    protected function generateUniqueUsername($fname)
+    {
+        do {
+            $randomNumber = str_pad(rand(10000, 99999), 5, '0', STR_PAD_LEFT);
+            $username = strtolower($fname . '_' . $randomNumber);
+        } while (User::where('username', $username)->exists());
+
+        return $username;
+    }
+}

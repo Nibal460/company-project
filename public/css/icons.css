@@ -1,0 +1,71 @@
+
+.fixed-icons-container {
+    position: fixed;
+    top: 50%;
+    right: 30px;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1000;
+}
+
+.fixed-icons-container a {
+    position: relative;
+    margin: 10px 0;
+}
+
+.fixed-icons-container img {
+    width: 40px;
+    height: 40px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    padding: 10px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.fixed-icons-container img:hover {
+    transform: scale(1.2);
+}
+
+.fixed-icons-container .tooltip {
+    position: absolute;
+    left: -100px; /* Adjusted this value to position the tooltip further to the left */
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    font-size: 16px; /* Increased font size */
+}
+
+.fixed-icons-container a:hover .tooltip {
+    opacity: 1;
+}
+
+
+.fixed-icons-container .tooltip1 {
+    position: absolute;
+    left: -70px; /* Adjusted this value to position the tooltip further to the left */
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    font-size: 16px; /* Increased font size */
+}
+
+.fixed-icons-container a:hover .tooltip1 {
+    opacity: 1;
+}

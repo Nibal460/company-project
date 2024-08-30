@@ -1,0 +1,3 @@
+<!-- @if($profile3->user_image)
+                <!-- Check for the format of the image path -->
+              <!--  <img class="user-image" src="{{ asset($profile3->user_image) }}" alt="{{ $profile3->fname }}'s Profile Picture">-->
